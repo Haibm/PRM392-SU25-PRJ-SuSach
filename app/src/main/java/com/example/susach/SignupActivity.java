@@ -38,10 +38,11 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String email = ((android.widget.EditText) findViewById(R.id.signup_email)).getText().toString();
+                String name = ((android.widget.EditText) findViewById(R.id.signup_name)).getText().toString();
                 String password = ((android.widget.EditText) findViewById(R.id.signup_password)).getText().toString();
                 String confirmPassword = ((android.widget.EditText) findViewById(R.id.signup_confirm)).getText().toString();
 
-                if(email.equals("") || password.equals("") || confirmPassword.equals("")) {
+                if(email.equals("") || name.equals("") || password.equals("") || confirmPassword.equals("")) {
                     Toast.makeText(SignupActivity.this, "All fields are mandatory", Toast.LENGTH_SHORT).show();
                 } else {
                     if(password.equals(confirmPassword)) {
@@ -52,7 +53,7 @@ public class SignupActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
                                             // User created successfully, now save additional data to Firestore
-                                            saveUserDataToFirestore(email, password);
+                                            saveUserDataToFirestore(email, password, name);
                                         } else {
                                             // If sign up fails, display a message to the user.
                                             Toast.makeText(SignupActivity.this, "Authentication failed: " + task.getException().getMessage(),
@@ -76,10 +77,11 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    private void saveUserDataToFirestore(final String email, final String password) {
+    private void saveUserDataToFirestore(final String email, final String password, final String name) {
         Map<String, Object> user = new HashMap<>();
         user.put("email", email);
         user.put("password", password);
+        user.put("name", name);
         user.put("role", 3);
         db.collection("account").document(email)
                 .set(user)
