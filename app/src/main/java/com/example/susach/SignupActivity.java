@@ -30,7 +30,7 @@ public class SignupActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Find views by ID
+
         View signupButton = findViewById(R.id.signup_button);
         View loginRedirectText = findViewById(R.id.loginRedirectText);
 
@@ -46,16 +46,16 @@ public class SignupActivity extends AppCompatActivity {
                     Toast.makeText(SignupActivity.this, "All fields are mandatory", Toast.LENGTH_SHORT).show();
                 } else {
                     if(password.equals(confirmPassword)) {
-                        // Create user with Firebase Authentication
+
                         mAuth.createUserWithEmailAndPassword(email, password)
                                 .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
-                                            // User created successfully, now save additional data to Firestore
+
                                             saveUserDataToFirestore(email, password, name);
                                         } else {
-                                            // If sign up fails, display a message to the user.
+
                                             Toast.makeText(SignupActivity.this, "Authentication failed: " + task.getException().getMessage(),
                                                     Toast.LENGTH_SHORT).show();
                                         }

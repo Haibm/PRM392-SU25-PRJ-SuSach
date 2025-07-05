@@ -40,7 +40,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="24dp"/>
 
-    <!-- Email -->
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
         android:layout_marginBottom="16dp"
         android:inputType="textEmailAddress"/>
 
-    <!-- Name -->
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -72,7 +72,7 @@
         android:layout_marginBottom="16dp"
         android:inputType="textPersonName"/>
 
-    <!-- Role -->
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -87,7 +87,7 @@
         android:padding="12dp"
         android:layout_marginBottom="24dp"/>
 
-    <!-- Save Button -->
+
     <Button
         android:id="@+id/btn_save_info"
         android:layout_width="match_parent"

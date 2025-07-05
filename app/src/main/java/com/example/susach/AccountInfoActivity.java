@@ -45,7 +45,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_info);
 
-        // Initialize Firebase
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -55,10 +55,10 @@ public class AccountInfoActivity extends AppCompatActivity {
         spinnerRole = findViewById(R.id.spinner_role_info);
         btnSave = findViewById(R.id.btn_save_info);
 
-        // Setup role spinner
+
         setupRoleSpinner();
 
-        // Load user info from Firebase
+
         loadUserInfo();
 
         imgAvatar.setOnClickListener(new View.OnClickListener() {
@@ -92,7 +92,7 @@ public class AccountInfoActivity extends AppCompatActivity {
             currentEmail = currentUser.getEmail();
             etEmail.setText(currentEmail);
 
-            // Load user data from Firestore
+
             db.collection("account").document(currentEmail)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -121,13 +121,13 @@ public class AccountInfoActivity extends AppCompatActivity {
 
     private void setRoleSpinnerSelection(int role) {
         switch (role) {
-            case 1: // Admin
+            case 1:
                 spinnerRole.setSelection(2);
                 break;
-            case 2: // Staff
+            case 2:
                 spinnerRole.setSelection(1);
                 break;
-            case 3: // User
+            case 3:
             default:
                 spinnerRole.setSelection(0);
                 break;
@@ -161,13 +161,13 @@ public class AccountInfoActivity extends AppCompatActivity {
                 return;
             }
 
-            // Create data to update
+
             Map<String, Object> userData = new HashMap<>();
             userData.put("email", email);
             userData.put("name", name);
             userData.put("role", role);
 
-            // Update user data in Firestore
+
             db.collection("account").document(currentEmail)
                     .update(userData)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
