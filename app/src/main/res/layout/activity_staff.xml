@@ -5,6 +5,111 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".StaffActivity">
+
+    <!-- Header -->
+    <TextView
+        android:id="@+id/staff_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/purple_500"
+        android:padding="16dp"
+        android:text="Staff Dashboard"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Main Content Area -->
+    <FrameLayout
+        android:id="@+id/staff_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        app:layout_constraintTop_toBottomOf="@id/staff_header"
+        app:layout_constraintBottom_toTopOf="@id/staff_navbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Welcome Content -->
+        <LinearLayout
+            android:id="@+id/welcome_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp">
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/ic_launcher_foreground"
+                android:contentDescription="Staff Icon"
+                android:layout_marginBottom="24dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome to Staff Dashboard"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/purple_700"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manage articles and content"
+                android:textSize="16sp"
+                android:textColor="@color/gray"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- Navigation Bar -->
+    <LinearLayout
+        android:id="@+id/staff_navbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/purple_500"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Manage Article Button -->
+        <Button
+            android:id="@+id/btn_manage_article"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="Manage Article"
+            android:textColor="@color/white"
+            android:background="@drawable/lavender_border"
+            android:padding="12dp"
+            android:textSize="14sp" />
+
+        <!-- Logout Button -->
+        <Button
+            android:id="@+id/btn_logout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:text="Logout"
+            android:textColor="@color/white"
+            android:background="@drawable/lavender_border"
+            android:padding="12dp"
+            android:textSize="14sp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
