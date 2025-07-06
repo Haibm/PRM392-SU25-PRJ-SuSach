@@ -1,6 +1,9 @@
 package com.example.susach;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,5 +23,17 @@ public class UserActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+
+        LinearLayout infoLayout = findViewById(R.id.info_account_layout);
+        if (infoLayout != null) {
+            infoLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(UserActivity.this, AccountInfoActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
     }
 }

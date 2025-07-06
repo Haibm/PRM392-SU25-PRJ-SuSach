@@ -27,11 +27,11 @@ public class AdminActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize buttons
+
         btnManageAccount = findViewById(R.id.btn_manage_account);
         btnHomeApp = findViewById(R.id.btn_home_app);
 
-        // Set click listeners
+
         btnManageAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

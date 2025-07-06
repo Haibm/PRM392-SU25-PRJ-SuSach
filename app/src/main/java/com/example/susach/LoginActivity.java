@@ -25,11 +25,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize Firebase Auth and Firestore
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Find views by ID
+
         View loginButton = findViewById(R.id.login_button);
         View signupRedirectText = findViewById(R.id.signupRedirectText);
 
@@ -42,16 +42,16 @@ public class LoginActivity extends AppCompatActivity {
                 if(email.equals("") || password.equals("")) {
                     Toast.makeText(LoginActivity.this, "All fields are mandatory", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Authenticate with Firebase
+
                     mAuth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        // Login successful, now check user role from 'account' collection using email
+
                                         checkUserRoleAndRedirect(email);
                                     } else {
-                                        // If login fails, display a message to the user.
+
                                         Toast.makeText(LoginActivity.this, "Login failed: " + task.getException().getMessage(),
                                                 Toast.LENGTH_SHORT).show();
                                     }

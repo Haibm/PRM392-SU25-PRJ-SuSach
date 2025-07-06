@@ -49,17 +49,13 @@ public class ManageAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_account);
 
-        // Initialize Firebase Firestore and Auth
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-        // Initialize views
         initializeViews();
-        
-        // Load accounts
+
         loadAccounts();
 
-        // Set up click listeners
         setupClickListeners();
     }
 
@@ -74,13 +70,11 @@ public class ManageAccountActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btn_back);
         listViewAccounts = findViewById(R.id.listview_accounts);
 
-        // Setup role spinner with enhanced options
         String[] roles = {"Select Role", "Admin (Full Access)", "Staff (Limited Access)", "User (Basic Access)", "Moderator (Content Management)", "Guest (Read Only)"};
         ArrayAdapter<String> roleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, roles);
         roleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerRole.setAdapter(roleAdapter);
 
-        // Setup account list
         accountList = new ArrayList<>();
         emailList = new ArrayList<>();
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, accountList);
@@ -177,7 +171,6 @@ public class ManageAccountActivity extends AppCompatActivity {
                             
                             Long role = document.getLong("role");
                             if (role != null) {
-                                // Set spinner selection based on role (add 1 because first item is "Select Role")
                                 spinnerRole.setSelection(role.intValue());
                             } else {
                                 spinnerRole.setSelection(0); // Default to "Select Role"
@@ -192,30 +185,26 @@ public class ManageAccountActivity extends AppCompatActivity {
         String password = etPassword.getText().toString().trim();
         String name = etName.getText().toString().trim();
         int selectedPosition = spinnerRole.getSelectedItemPosition();
-        
-        // Validate role selection (position 0 is "Select Role")
+
         if (selectedPosition == 0) {
             Toast.makeText(this, "Please select a role", Toast.LENGTH_SHORT).show();
             return;
         }
         
-        int role = selectedPosition; // Role value matches the position
+        int role = selectedPosition;
 
         if (email.isEmpty() || password.isEmpty() || name.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // First create user in Firebase Authentication
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // User created successfully in Authentication, now save to Firestore
                             saveUserDataToFirestore(email, password, name, role);
                         } else {
-                            // If Authentication fails, display error
                             handleAuthError(task.getException());
                         }
                     }
@@ -242,15 +231,13 @@ public class ManageAccountActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(ManageAccountActivity.this, "Error saving to Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        // If Firestore fails, we should delete the Authentication user
+
                         deleteAuthUser(email);
                     }
                 });
     }
 
     private void deleteAuthUser(String email) {
-        // This is a fallback method to clean up Authentication if Firestore fails
-        // Note: This requires admin privileges and should be handled carefully
         Toast.makeText(this, "Cleaning up Authentication user due to Firestore failure", Toast.LENGTH_SHORT).show();
     }
 
@@ -263,21 +250,19 @@ public class ManageAccountActivity extends AppCompatActivity {
         String name = etName.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
         int selectedPosition = spinnerRole.getSelectedItemPosition();
-        
-        // Validate role selection (position 0 is "Select Role")
+
         if (selectedPosition == 0) {
             Toast.makeText(this, "Please select a role", Toast.LENGTH_SHORT).show();
             return;
         }
         
-        int role = selectedPosition; // Role value matches the position
+        int role = selectedPosition;
 
         if (name.isEmpty()) {
             Toast.makeText(this, "Please fill name field", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Update Firestore data
         Map<String, Object> updates = new HashMap<>();
         updates.put("name", name);
         updates.put("role", role);
@@ -290,7 +275,7 @@ public class ManageAccountActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        // If password was updated, also update in Authentication
+
                         if (!password.isEmpty()) {
                             updateAuthPassword(selectedEmail, password);
                         } else {
@@ -310,12 +295,6 @@ public class ManageAccountActivity extends AppCompatActivity {
     }
 
     private void updateAuthPassword(String email, String newPassword) {
-        // Note: Updating password in Authentication requires the user to be signed in
-        // or requires admin privileges. For admin operations, you might need to use
-        // Firebase Admin SDK on the server side.
-        
-        // For now, we'll show a message that the password update in Authentication
-        // requires additional setup
         Toast.makeText(this, "Account updated in Firestore. Password update in Authentication requires admin privileges.", Toast.LENGTH_LONG).show();
         clearFields();
         loadAccounts();
@@ -332,12 +311,12 @@ public class ManageAccountActivity extends AppCompatActivity {
                 .setTitle("Delete Account")
                 .setMessage("Are you sure you want to delete this account? This will remove the user from both Authentication and Firestore.")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    // First delete from Firestore
+
                     db.collection("account").document(selectedEmail).delete()
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    // Then attempt to delete from Authentication
+
                                     deleteFromAuthentication(selectedEmail);
                                 }
                             })
@@ -353,8 +332,7 @@ public class ManageAccountActivity extends AppCompatActivity {
     }
 
     private void deleteFromAuthentication(String email) {
-        // Note: Deleting users from Authentication requires admin privileges
-        // For now, we'll show a message about the limitation
+
         Toast.makeText(this, "Account deleted from Firestore. Authentication deletion requires admin privileges.", Toast.LENGTH_LONG).show();
         clearFields();
         loadAccounts();
@@ -365,18 +343,13 @@ public class ManageAccountActivity extends AppCompatActivity {
         etEmail.setText("");
         etPassword.setText("");
         etName.setText("");
-        spinnerRole.setSelection(0); // Reset to "Select Role"
+        spinnerRole.setSelection(0);
     }
 
-    // Helper method to check if user exists in Authentication
     private void checkUserExistsInAuth(String email, OnCompleteListener<QuerySnapshot> listener) {
-        // This is a placeholder for checking if user exists in Authentication
-        // In a real implementation, you would need to use Firebase Admin SDK
-        // or implement a server-side function to check Authentication users
         Toast.makeText(this, "Note: Authentication user verification requires server-side implementation", Toast.LENGTH_SHORT).show();
     }
 
-    // Method to handle Authentication errors
     private void handleAuthError(Exception e) {
         String errorMessage = "Authentication error: ";
         if (e.getMessage().contains("email address is already in use")) {

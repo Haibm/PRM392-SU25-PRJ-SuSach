@@ -8,7 +8,7 @@
     android:background="@color/white"
     tools:context=".AdminActivity">
 
-    <!-- Header -->
+
     <TextView
         android:id="@+id/admin_header"
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Main Content Area -->
+
     <FrameLayout
         android:id="@+id/admin_content"
         android:layout_width="0dp"
@@ -35,7 +35,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Welcome Content -->
+
         <LinearLayout
             android:id="@+id/welcome_content"
             android:layout_width="match_parent"
@@ -72,7 +72,7 @@
 
     </FrameLayout>
 
-    <!-- Navigation Bar -->
+
     <LinearLayout
         android:id="@+id/admin_navbar"
         android:layout_width="match_parent"
@@ -84,7 +84,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Manage Account Button -->
+
         <Button
             android:id="@+id/btn_manage_account"
             android:layout_width="0dp"
@@ -97,7 +97,7 @@
             android:padding="12dp"
             android:textSize="14sp" />
 
-        <!-- HomeApp Button -->
+
         <Button
             android:id="@+id/btn_home_app"
             android:layout_width="0dp"
