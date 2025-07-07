@@ -43,7 +43,7 @@ public class AdminActivity extends AppCompatActivity {
         btnHomeApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AdminActivity.this, UserActivity.class);
+                Intent intent = new Intent(AdminActivity.this, UserProfileActivity.class);
                 startActivity(intent);
             }
         });

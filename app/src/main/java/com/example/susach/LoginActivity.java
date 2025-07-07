@@ -110,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
                 message = "Welcome Staff!";
                 break;
             case 3: // User
-                intent = new Intent(LoginActivity.this, UserActivity.class);
+                intent = new Intent(LoginActivity.this, UserHomeActivity.class);
                 message = "Welcome User!";
                 break;
             default:
