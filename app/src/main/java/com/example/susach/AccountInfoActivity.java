@@ -25,7 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import com.example.susach.model.Account;
+import com.example.susach.models.Account;
 
 import java.io.IOException;
 import java.util.HashMap;

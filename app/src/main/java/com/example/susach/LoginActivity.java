@@ -14,7 +14,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.example.susach.model.Account;
+import com.example.susach.models.Account;
 
 public class LoginActivity extends AppCompatActivity {
 

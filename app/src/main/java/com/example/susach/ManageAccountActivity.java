@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.example.susach.model.Account;
+import com.example.susach.models.Account;
 
 public class ManageAccountActivity extends AppCompatActivity {
 

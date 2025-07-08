@@ -1,4 +1,4 @@
-package com.example.susach.model;
+package com.example.susach.models;
 
 public class Account {
     private String email;

@@ -17,7 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.example.susach.model.Account;
+import com.example.susach.models.Account;
 
 public class SignupActivity extends AppCompatActivity {
 
