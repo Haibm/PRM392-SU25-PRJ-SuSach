@@ -1,6 +1,7 @@
-package com.example.susach;
+package com.example.susach.models;
 
 public class Quiz {
+    private String questionId;
     private String question;
 
     private String answer1;
@@ -20,6 +21,24 @@ public class Quiz {
         this.answer3 = answer3;
         this.answer4 = answer4;
         this.correct = correct;
+    }
+
+    public Quiz(String questionId, String question, String answer1, String answer2, String answer3, String answer4, int correct) {
+        this.questionId = questionId;
+        this.question = question;
+        this.answer1 = answer1;
+        this.answer2 = answer2;
+        this.answer3 = answer3;
+        this.answer4 = answer4;
+        this.correct = correct;
+    }
+
+    public String getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
     }
 
     public String getQuestion() {
