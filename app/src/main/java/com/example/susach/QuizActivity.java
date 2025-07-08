@@ -1,5 +1,6 @@
 package com.example.susach;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -91,6 +92,12 @@ public class QuizActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Grade: "+grade, Toast.LENGTH_SHORT).show();
             // Navigate to result or restart quiz
+
+            Intent intent = new Intent(this, LeaderboardActivity.class);
+            intent.putExtra("grade", grade);
+            float grade10 = ((float)grade / quizList.size()) * 10;
+            intent.putExtra("grade10", grade10);
+            startActivity(intent);
         }
     }
 
