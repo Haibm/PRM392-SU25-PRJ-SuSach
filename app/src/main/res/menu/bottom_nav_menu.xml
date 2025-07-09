@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ///Dat: Bottom Navigation Menu - 4 tabs: Home, Explore, Quiz, Profile -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/baseline_home_24"
+        android:title="Trang chủ" />
+
+    <item
+        android:id="@+id/navigation_explore"
+        android:icon="@drawable/baseline_explore_24"
+        android:title="Khám phá" />
+
+    <item
+        android:id="@+id/navigation_quiz"
+        android:icon="@drawable/baseline_quiz_24"
+        android:title="Quiz" />
+
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/baseline_person_24"
+        android:title="Profile" />
+</menu> 

@@ -1,6 +1,5 @@
-package com.example.susach;
+package com.example.susach.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,13 +14,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.susach.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -30,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.example.susach.models.Account;
 
 public class ManageAccountActivity extends AppCompatActivity {
 
@@ -128,14 +129,13 @@ public class ManageAccountActivity extends AppCompatActivity {
                             accountList.clear();
                             emailList.clear();
                             for (DocumentSnapshot document : task.getResult()) {
-                                String email = document.getId();
-                                String name = document.getString("name");
-                                Long role = document.getLong("role");
-                                
-                                String roleText = getRoleText(role);
-                                
-                                accountList.add(email + " - " + name + " (" + roleText + ")");
-                                emailList.add(email);
+                                // Use Account model
+                                Account account = document.toObject(Account.class);
+                                if (account != null) {
+                                    String roleText = getRoleText((long) account.getRole());
+                                    accountList.add(account.getEmail() + " - " + account.getName() + " (" + roleText + ")");
+                                    emailList.add(account.getEmail());
+                                }
                             }
                             adapter.notifyDataSetChanged();
                         } else {
@@ -165,15 +165,13 @@ public class ManageAccountActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful() && task.getResult().exists()) {
                             DocumentSnapshot document = task.getResult();
-                            etEmail.setText(email);
-                            etName.setText(document.getString("name"));
-                            etPassword.setText(""); // Don't show password for security
-                            
-                            Long role = document.getLong("role");
-                            if (role != null) {
-                                spinnerRole.setSelection(role.intValue());
-                            } else {
-                                spinnerRole.setSelection(0); // Default to "Select Role"
+                            // Use Account model
+                            Account account = document.toObject(Account.class);
+                            if (account != null) {
+                                etEmail.setText(account.getEmail());
+                                etName.setText(account.getName());
+                                etPassword.setText(""); // Don't show password for security
+                                spinnerRole.setSelection(account.getRole());
                             }
                         }
                     }
@@ -190,20 +188,19 @@ public class ManageAccountActivity extends AppCompatActivity {
             Toast.makeText(this, "Please select a role", Toast.LENGTH_SHORT).show();
             return;
         }
-        
         int role = selectedPosition;
-
         if (email.isEmpty() || password.isEmpty() || name.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        mAuth.createUserWithEmailAndPassword(email, password)
+        // Use Account model
+        Account account = new Account(email, password, name, role);
+        mAuth.createUserWithEmailAndPassword(account.getEmail(), account.getPassword())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            saveUserDataToFirestore(email, password, name, role);
+                            saveUserDataToFirestore(account);
                         } else {
                             handleAuthError(task.getException());
                         }
@@ -211,14 +208,13 @@ public class ManageAccountActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveUserDataToFirestore(String email, String password, String name, int role) {
-        Map<String, Object> account = new HashMap<>();
-        account.put("email", email);
-        account.put("password", password);
-        account.put("name", name);
-        account.put("role", role);
-
-        db.collection("account").document(email).set(account)
+    private void saveUserDataToFirestore(Account account) {
+        Map<String, Object> acc = new HashMap<>();
+        acc.put("email", account.getEmail());
+        acc.put("password", account.getPassword());
+        acc.put("name", account.getName());
+        acc.put("role", account.getRole());
+        db.collection("account").document(account.getEmail()).set(acc)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -231,8 +227,6 @@ public class ManageAccountActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(ManageAccountActivity.this, "Error saving to Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-
-                        deleteAuthUser(email);
                     }
                 });
     }

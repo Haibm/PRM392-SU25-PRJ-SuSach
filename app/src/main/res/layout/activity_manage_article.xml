@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:background="@color/white"
-    tools:context=".ManageArticleActivity">
+    tools:context=".activities.ManageArticleActivity">
 
     <!-- Header -->
     <TextView
@@ -278,12 +278,11 @@
         android:textColor="@color/purple_700"
         android:layout_marginBottom="8dp" />
 
-    <ListView
-        android:id="@+id/listview_articles"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_events"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:background="@drawable/lavender_border"
-        android:divider="@color/purple_200"
-        android:dividerHeight="1dp" />
+        android:layout_marginBottom="16dp" />
 
 </LinearLayout>

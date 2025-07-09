@@ -1,4 +1,4 @@
-package com.example.susach;
+package com.example.susach.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -18,12 +18,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.susach.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import com.example.susach.models.Account;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,6 +39,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     private EditText etEmail;
     private Spinner spinnerRole;
     private Button btnSave;
+    private Button btnLogout;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private String currentEmail;
@@ -54,6 +58,7 @@ public class AccountInfoActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.et_email_info);
         spinnerRole = findViewById(R.id.spinner_role_info);
         btnSave = findViewById(R.id.btn_save_info);
+        btnLogout = findViewById(R.id.btn_logout_info);
 
 
         setupRoleSpinner();
@@ -77,6 +82,17 @@ public class AccountInfoActivity extends AppCompatActivity {
                 saveUserInfo();
             }
         });
+
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                Intent intent = new Intent(AccountInfoActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     private void setupRoleSpinner() {
@@ -92,7 +108,6 @@ public class AccountInfoActivity extends AppCompatActivity {
             currentEmail = currentUser.getEmail();
             etEmail.setText(currentEmail);
 
-
             db.collection("account").document(currentEmail)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -100,14 +115,11 @@ public class AccountInfoActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                             if (task.isSuccessful() && task.getResult().exists()) {
                                 DocumentSnapshot document = task.getResult();
-                                String name = document.getString("name");
-                                Long role = document.getLong("role");
-
-                                    etName.setText(name);
-
-                                
-                                if (role != null) {
-                                    setRoleSpinnerSelection(role.intValue());
+                                // Use Account model
+                                Account account = document.toObject(Account.class);
+                                if (account != null) {
+                                    etName.setText(account.getName());
+                                    setRoleSpinnerSelection(account.getRole());
                                 }
                             } else {
                                 Toast.makeText(AccountInfoActivity.this, "Không thể tải thông tin người dùng", Toast.LENGTH_SHORT).show();
@@ -150,23 +162,23 @@ public class AccountInfoActivity extends AppCompatActivity {
             String email = etEmail.getText().toString().trim();
             String name = etName.getText().toString().trim();
             int role = getSelectedRoleValue();
-            
+
             if (email.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập email", Toast.LENGTH_SHORT).show();
                 return;
             }
-            
+
             if (name.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập tên", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-
+            // Use Account model
+            Account account = new Account(email, null, name, role);
             Map<String, Object> userData = new HashMap<>();
-            userData.put("email", email);
-            userData.put("name", name);
-            userData.put("role", role);
-
+            userData.put("email", account.getEmail());
+            userData.put("name", account.getName());
+            userData.put("role", account.getRole());
 
             db.collection("account").document(currentEmail)
                     .update(userData)
