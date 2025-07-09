@@ -1,15 +1,56 @@
+# Các tệp và thư mục do Android Studio và IntelliJ IDEA tạo ra
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+
+# Tệp Gradle và thư mục cấu hình Gradle
+.gradle/
+*.gradle
 local.properties
+
+# Thư mục biên dịch
+/build/
+
+# Tệp và thư mục đặc biệt của hệ điều hành
+.DS_Store           # Dành cho macOS
+Thumbs.db           # Dành cho Windows
+
+# Các tệp cấu hình của Android Studio (các tệp workspace)
+.idea/workspace.xml
+.idea/libraries/
+.idea/modules.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/caches/
+
+# Tệp và thư mục chứa thông tin tài nguyên Android không cần thiết
+/captures/
+.externalNativeBuild/
+.cxx/
+
+# Các tệp cấu hình không cần thiết (ví dụ: tệp log)
+*.log
+
+# Các tệp bị bỏ qua khi thực hiện kết xuất (có thể được tạo trong Android Studio khi sử dụng build hoặc deploy)
+*.apk
+*.ap_           # Tệp APK cũ
+*.dex
+*.class         # Tệp .class của Java
+*.jar           # Tệp JAR biên dịch
+*.war           # Tệp WAR biên dịch
+*.aar           # Tệp Android ARchive (tệp thư viện Android)
+
+# Các thư mục con của Gradle (cache)
+.gradle/
+
+# Các thư mục không cần thiết khi làm việc với Git
+.idea/
+local.properties
+
+# Các tệp nhật ký của hệ thống và IDE
+*.log
+
+# Các tệp không theo dõi
+# (Tạo ra các tệp mới nhưng không cần thiết trong kho Git)
+*.swp             # Tệp swap của editor
+*.swo             # Tệp swap của editor
+*.bak             # Tệp backup của editor
