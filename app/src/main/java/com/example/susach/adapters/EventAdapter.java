@@ -1,13 +1,12 @@
-package com.example.susach;
+package com.example.susach.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.example.susach.R;
 import com.example.susach.models.Event;
 import java.util.List;
 
@@ -15,7 +14,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     public interface OnEventClickListener {
         void onEventClick(Event event);
     }
-
     private List<Event> eventList;
     private OnEventClickListener listener;
 

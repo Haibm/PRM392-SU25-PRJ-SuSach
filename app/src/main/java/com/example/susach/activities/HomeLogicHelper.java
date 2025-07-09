@@ -1,4 +1,4 @@
-package com.example.susach;
+package com.example.susach.activities;
 
 import com.example.susach.models.Event;
 import java.util.ArrayList;
