@@ -138,6 +138,46 @@ public class QuizData {
             });
     }
 
+    /**
+     * Add or update a user's leaderboard entry. If the user already exists and the new score is better, update it.
+     * Otherwise, add a new entry. Username is fixed as 'user@gmail.com'.
+     */
+    public void addOrUpdateLeaderboardEntry(String quizSetName, int grade, float grade10, com.google.android.gms.tasks.OnCompleteListener<Void> listener) {
+        String userName = "user@gmail.com";
+        db.collection("leaderboard")
+            .document(quizSetName)
+            .collection("users")
+            .document(userName)
+            .get()
+            .addOnSuccessListener(documentSnapshot -> {
+                boolean shouldUpdate = true;
+                if (documentSnapshot.exists()) {
+                    Integer oldGrade = documentSnapshot.getLong("grade") != null ? documentSnapshot.getLong("grade").intValue() : null;
+                    if (oldGrade != null && oldGrade >= grade) {
+                        shouldUpdate = false;
+                    }
+                }
+                if (shouldUpdate) {
+                    java.util.Map<String, Object> data = new java.util.HashMap<>();
+                    data.put("name", userName);
+                    data.put("grade", grade);
+                    data.put("grade10", (double) grade10);
+                    db.collection("leaderboard")
+                        .document(quizSetName)
+                        .collection("users")
+                        .document(userName)
+                        .set(data)
+                        .addOnCompleteListener(listener);
+                } else {
+                    // No update needed, call listener as completed
+                    if (listener != null) listener.onComplete(null);
+                }
+            })
+            .addOnFailureListener(e -> {
+                if (listener != null) listener.onComplete(null);
+            });
+    }
+
     private java.util.Map<String, Object> quizToMap(Quiz quiz) {
         java.util.Map<String, Object> map = new java.util.HashMap<>();
         map.put("question", quiz.getQuestion());

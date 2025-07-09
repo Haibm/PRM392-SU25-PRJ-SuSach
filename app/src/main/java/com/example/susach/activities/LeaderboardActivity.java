@@ -77,6 +77,10 @@ public class LeaderboardActivity extends AppCompatActivity {
         });
     }
 
+    private void saveLeaderboardData() {
+
+    }
+
     interface LeaderboardDataCallback {
         void onDataLoaded(List<Leaderboard> list);
         void onError(Exception e);

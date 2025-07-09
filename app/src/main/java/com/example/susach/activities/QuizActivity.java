@@ -96,11 +96,19 @@ public class QuizActivity extends AppCompatActivity {
                 showQuestion();
             } else {
                 Toast.makeText(this, "Grade: " + quizManager.getScore(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, LeaderboardActivity.class);
-                intent.putExtra("grade", quizManager.getScore());
-                intent.putExtra("grade10", quizManager.getScore10());
-                intent.putExtra("quizSetName", quizSetName);
-                startActivity(intent);
+                // Update leaderboard before navigating
+                quizData.addOrUpdateLeaderboardEntry(
+                    quizSetName,
+                    quizManager.getScore(),
+                    quizManager.getScore10(),
+                    task -> {
+                        Intent intent = new Intent(QuizActivity.this, LeaderboardActivity.class);
+                        intent.putExtra("grade", quizManager.getScore());
+                        intent.putExtra("grade10", quizManager.getScore10());
+                        intent.putExtra("quizSetName", quizSetName);
+                        startActivity(intent);
+                    }
+                );
             }
         }
     }
