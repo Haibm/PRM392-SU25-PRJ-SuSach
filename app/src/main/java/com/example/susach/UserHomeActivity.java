@@ -2,14 +2,13 @@ package com.example.susach;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.susach.databinding.ActivityUserHomeBinding;
 import com.example.susach.models.Event;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -17,8 +16,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
+//Dat: UserHomeActivity - Trang chủ
 public class UserHomeActivity extends AppCompatActivity {
-    private RecyclerView recyclerEvents;
+    //Dat: View Binding cho Home
+    private ActivityUserHomeBinding binding;
     private EventAdapter eventAdapter;
     private List<Event> eventList = new ArrayList<>();
     private FirebaseFirestore db;
@@ -26,18 +27,46 @@ public class UserHomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_home);
+        //Dat: Setup View Binding
+        binding = ActivityUserHomeBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        recyclerEvents = findViewById(R.id.recycler_events);
-        recyclerEvents.setLayoutManager(new LinearLayoutManager(this));
+        //Dat: Setup RecyclerView cho Home
+        binding.recyclerEvents.setLayoutManager(new LinearLayoutManager(this));
         eventAdapter = new EventAdapter(eventList, event -> openEventDetail(event));
-        recyclerEvents.setAdapter(eventAdapter);
+        binding.recyclerEvents.setAdapter(eventAdapter);
 
+        //Dat: Setup BottomNavigationView cho Home
+        setupBottomNavigation();
+
+        //Dat: Load dữ liệu từ Firestore cho Home
         db = FirebaseFirestore.getInstance();
         loadEvents();
-        // Đã xóa code xử lý BottomNavigationView
     }
 
+    //Dat: Navigation menu chỉ xử lý chuyển trang hoặc Toast
+    private void setupBottomNavigation() {
+        binding.bottomNavigation.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_home) {
+                return true;
+            } else if (itemId == R.id.navigation_explore) {
+                Toast.makeText(this, "Tính năng Khám phá sẽ được phát triển", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.navigation_quiz) {
+                Toast.makeText(this, "Tính năng Quiz sẽ được phát triển", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.navigation_profile) {
+                Intent intent = new Intent(this, UserProfileActivity.class);
+                startActivity(intent);
+                return true;
+            }
+            return false;
+        });
+        binding.bottomNavigation.setSelectedItemId(R.id.navigation_home);
+    }
+
+    //Dat: Load events cho Home
     private void loadEvents() {
         db.collection("events").get().addOnSuccessListener(queryDocumentSnapshots -> {
             eventList.clear();
