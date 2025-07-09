@@ -36,7 +36,6 @@
             android:name=".EventDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".SplashActivity"
             android:name=".activities.MainActivity"
             android:exported="false" />
         <activity
