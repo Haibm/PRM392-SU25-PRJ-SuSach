@@ -1,4 +1,4 @@
-package com.example.susach;
+package com.example.susach.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.susach.R;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -16,8 +18,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        Intent intent = new Intent(this, QuizActivity.class);
+        // Nếu muốn chuyển hướng sang danh sách bộ câu hỏi:
+        Intent intent = new Intent(this, QuizSetListActivity.class);
         startActivity(intent);
-
+        // Nếu chỉ muốn hiển thị layout chính thì xóa 2 dòng trên
     }
 }
