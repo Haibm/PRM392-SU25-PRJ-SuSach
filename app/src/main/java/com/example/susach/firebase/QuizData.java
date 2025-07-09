@@ -1,6 +1,7 @@
 package com.example.susach.firebase;
 
 import com.example.susach.models.Quiz;
+import com.example.susach.models.Leaderboard;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -17,6 +18,11 @@ public class QuizData {
 
     public interface QuizSetCallback {
         void onDataLoaded(List<String> quizSetList);
+        void onError(Exception e);
+    }
+
+    public interface LeaderboardDataCallback {
+        void onDataLoaded(List<Leaderboard> leaderboardList);
         void onError(Exception e);
     }
 
@@ -102,6 +108,34 @@ public class QuizData {
             .collection(quizSetName).document(questionId)
             .delete()
             .addOnCompleteListener(listener);
+    }
+
+    public void getLeaderboardList(String quizSetName, LeaderboardDataCallback callback) {
+        db.collection("leaderboard")
+            .document(quizSetName)
+            .collection("users")
+            .get()
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    List<Leaderboard> leaderboardList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        try {
+                            String name = document.getString("name");
+                            int grade = document.getLong("grade").intValue();
+                            float grade10 = document.getDouble("grade10").floatValue();
+                            if (name != null) {
+                                leaderboardList.add(new Leaderboard(name, grade, grade10));
+                            }
+                        } catch (Exception e) {
+                            // skip malformed document
+                        }
+                    }
+                    leaderboardList.sort((o1, o2) -> o2.getGrade() - o1.getGrade());
+                    callback.onDataLoaded(leaderboardList);
+                } else {
+                    callback.onError(task.getException());
+                }
+            });
     }
 
     private java.util.Map<String, Object> quizToMap(Quiz quiz) {

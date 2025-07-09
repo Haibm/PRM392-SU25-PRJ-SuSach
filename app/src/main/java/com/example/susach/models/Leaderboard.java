@@ -1,4 +1,4 @@
-package com.example.susach;
+package com.example.susach.models;
 
 public class Leaderboard {
     private String name;

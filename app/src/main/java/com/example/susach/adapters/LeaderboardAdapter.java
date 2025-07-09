@@ -1,4 +1,4 @@
-package com.example.susach;
+package com.example.susach.adapters;
 
 import android.view.LayoutInflater;
 import android.widget.TextView;
@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.susach.models.Leaderboard;
+import com.example.susach.R;
 
 import java.util.List;
 
