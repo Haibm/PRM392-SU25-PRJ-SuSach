@@ -14,6 +14,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.susach.models.Account;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -79,9 +80,9 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
-                                Long role = document.getLong("role");
-                                if (role != null) {
-                                    redirectBasedOnRole(role.intValue());
+                                Account account = document.toObject(Account.class);
+                                if (account != null && account.getRole() > 0) {
+                                    redirectBasedOnRole(account.getRole());
                                 } else {
                                     Toast.makeText(LoginActivity.this, "User role not found", Toast.LENGTH_SHORT).show();
                                 }
@@ -101,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
         String message;
 
         switch (role) {
-            case 1: // Admin
+            case 1:
                 intent = new Intent(LoginActivity.this, AdminActivity.class);
                 message = "Welcome Admin!";
                 break;
@@ -120,6 +121,6 @@ public class LoginActivity extends AppCompatActivity {
 
         Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
         startActivity(intent);
-        finish(); // Close the login activity
+        finish();
     }
 }

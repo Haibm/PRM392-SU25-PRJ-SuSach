@@ -17,6 +17,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.example.susach.models.Account;
+
 public class SignupActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
@@ -46,16 +48,14 @@ public class SignupActivity extends AppCompatActivity {
                     Toast.makeText(SignupActivity.this, "All fields are mandatory", Toast.LENGTH_SHORT).show();
                 } else {
                     if(password.equals(confirmPassword)) {
-
-                        mAuth.createUserWithEmailAndPassword(email, password)
+                        Account account = new Account(email, password, name, 3);
+                        mAuth.createUserWithEmailAndPassword(account.getEmail(), account.getPassword())
                                 .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
-
-                                            saveUserDataToFirestore(email, password, name);
+                                            saveUserDataToFirestore(account);
                                         } else {
-
                                             Toast.makeText(SignupActivity.this, "Authentication failed: " + task.getException().getMessage(),
                                                     Toast.LENGTH_SHORT).show();
                                         }
@@ -77,13 +77,13 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    private void saveUserDataToFirestore(final String email, final String password, final String name) {
+    private void saveUserDataToFirestore(final Account account) {
         Map<String, Object> user = new HashMap<>();
-        user.put("email", email);
-        user.put("password", password);
-        user.put("name", name);
-        user.put("role", 3);
-        db.collection("account").document(email)
+        user.put("email", account.getEmail());
+        user.put("password", account.getPassword());
+        user.put("name", account.getName());
+        user.put("role", account.getRole());
+        db.collection("account").document(account.getEmail())
                 .set(user)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
