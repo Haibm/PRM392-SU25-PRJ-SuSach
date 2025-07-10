@@ -24,7 +24,7 @@ public class QuizSelectActivity extends AppCompatActivity {
 
         btn.setOnClickListener(view -> {
             Intent intent = new Intent(QuizSelectActivity.this, QuizActivity.class);
-            intent.putExtra("quizSetName", "quiz1");
+            intent.putExtra("quizSetName", "quiz2");
             startActivity(intent);
         });
 
