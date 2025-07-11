@@ -1,18 +1,41 @@
 package com.example.susach.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
+
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.susach.databinding.ActivityUserProfileBinding;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.example.susach.R;
 
 public class UserProfileActivity extends AppCompatActivity {
-    private ActivityUserProfileBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityUserProfileBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_user_profile);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
-        // TODO: binding logic cho profile (hiển thị thông tin user, logout, ...)
+
+        LinearLayout infoLayout = findViewById(R.id.info_account_layout);
+        if (infoLayout != null) {
+            infoLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(UserProfileActivity.this, AccountInfoActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
     }
 }

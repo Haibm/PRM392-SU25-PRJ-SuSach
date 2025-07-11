@@ -6,10 +6,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.susach.databinding.ActivityEventDetailBinding;
 import com.example.susach.managers.EventManager;
 import com.example.susach.models.Event;
+import android.view.View;
+import com.example.susach.models.SavePost;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import java.util.Date;
 
 public class EventDetailActivity extends AppCompatActivity {
     private ActivityEventDetailBinding binding;
     private EventManager eventManager;
+    private Event currentEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +27,39 @@ public class EventDetailActivity extends AppCompatActivity {
         eventManager = new EventManager();
         String eventId = getIntent().getStringExtra("event_id");
         loadEventDetail(eventId);
+
+        binding.btnSaveArticle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentEvent == null) {
+                    Toast.makeText(EventDetailActivity.this, "Chưa tải xong dữ liệu sự kiện!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                Query query = db.collection("saved_post")
+                        .whereEqualTo("eventId", currentEvent.getId())
+                        .whereEqualTo("userId", userId)
+                        .limit(1);
+                query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        Toast.makeText(EventDetailActivity.this, "Bài viết đã được lưu!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        SavePost savePost = new SavePost(currentEvent.getId(), currentEvent.getName(), new Date(), userId);
+                        db.collection("saved_post")
+                                .add(savePost.toMap())
+                                .addOnSuccessListener(documentReference -> {
+                                    Toast.makeText(EventDetailActivity.this, "Đã lưu bài viết!", Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(EventDetailActivity.this, "Lưu thất bại!", Toast.LENGTH_SHORT).show();
+                                });
+                    }
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(EventDetailActivity.this, "Lỗi kiểm tra dữ liệu!", Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 
     private void loadEventDetail(String eventId) {
@@ -27,6 +67,7 @@ public class EventDetailActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Event event) {
                 if (event != null) {
+                    currentEvent = event;
                     binding.tvName.setText(event.getName());
                     binding.tvDescription.setText(event.getDescription());
                     binding.tvContents.setText(event.getContents());

@@ -101,5 +101,14 @@
             android:textColor="#888888"
             android:layout_marginBottom="8dp" />
 
+        <Button
+            android:id="@+id/btn_save_article"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lưu bài viết"
+            android:textColor="@color/white"
+            android:background="@color/purple_700"
+            android:layout_marginTop="16dp"/>
+
     </LinearLayout>
 </ScrollView> 
