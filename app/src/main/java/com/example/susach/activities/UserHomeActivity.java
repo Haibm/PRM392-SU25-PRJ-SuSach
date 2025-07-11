@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.example.susach.R;
 import com.example.susach.adapters.EventAdapter;
 import com.example.susach.databinding.ActivityUserHomeBinding;
 import com.example.susach.managers.EventManager;
@@ -30,6 +32,32 @@ public class UserHomeActivity extends AppCompatActivity {
 
         eventManager = new EventManager();
         loadEvents();
+
+        //Dat: Xử lý chuyển trang cho BottomNavigationView
+        binding.bottomNavigation.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_home) {
+                // Đang ở Home, không làm gì
+                return true;
+            } else if (itemId == R.id.navigation_explore) {
+                // Chuyển sang ExploreActivity nếu có
+                // startActivity(new Intent(this, ExploreActivity.class));
+                Toast.makeText(this, "Tính năng Khám phá sẽ được phát triển", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.navigation_quiz) {
+                // Chuyển sang QuizActivity nếu có
+                // startActivity(new Intent(this, QuizActivity.class));
+                Toast.makeText(this, "Tính năng Quiz sẽ được phát triển", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.navigation_profile) {
+                // Chuyển sang Profile
+                Intent intent = new Intent(this, UserProfileActivity.class);
+                startActivity(intent);
+                return true;
+            }
+            return false;
+        });
+        binding.bottomNavigation.setSelectedItemId(R.id.navigation_home);
     }
 
     private void loadEvents() {
