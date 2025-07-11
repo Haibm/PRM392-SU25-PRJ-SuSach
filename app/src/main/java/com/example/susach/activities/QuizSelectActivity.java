@@ -3,30 +3,70 @@ package com.example.susach.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.susach.R;
+import com.example.susach.adapters.QuizSelectAdapter;
+import com.example.susach.adapters.QuizSetAdapter;
+import com.example.susach.firebase.QuizData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuizSelectActivity extends AppCompatActivity {
 
+    RecyclerView rcvQuizSetList;;
+    QuizData quizData = new QuizData();
+    private QuizSelectAdapter adapter;
+    private List<String> quizSetList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_quiz_select);
 
-        Button btn = findViewById(R.id.button);
+        bindingView();
+        loadQuizSetList();
+    }
 
-        btn.setOnClickListener(view -> {
-            Intent intent = new Intent(QuizSelectActivity.this, QuizActivity.class);
-            intent.putExtra("quizSetName", "quiz2");
-            startActivity(intent);
+    private void bindingView(){
+        rcvQuizSetList = findViewById(R.id.rcvQuizSetList);
+        adapter = new QuizSelectAdapter(quizSetList, new QuizSelectAdapter.QuizSelectListener() {
+            @Override
+            public void onQuizSelectClick(String quizSetName) {
+                // Di toi bo quiz
+                Intent intent = new Intent(QuizSelectActivity.this, QuizActivity.class);
+                intent.putExtra("quizSetName", quizSetName);
+                startActivity(intent);
+            }
+
+
         });
+        rcvQuizSetList.setLayoutManager(new LinearLayoutManager(this));
+        rcvQuizSetList.setAdapter(adapter);
+    }
 
+    private void loadQuizSetList() {
+        quizData.getQuizSetList(new QuizData.QuizSetCallback() {
+            @Override
+            public void onDataLoaded(List<String> quizSetNames) {
+                quizSetList.clear();
+                quizSetList.addAll(quizSetNames);
+                adapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(QuizSelectActivity.this, "Lỗi tải danh sách bộ quiz", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
