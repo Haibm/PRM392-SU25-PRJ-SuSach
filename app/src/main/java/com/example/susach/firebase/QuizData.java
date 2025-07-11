@@ -1,11 +1,15 @@
 package com.example.susach.firebase;
 
 import com.example.susach.models.Quiz;
+import com.example.susach.models.Leaderboard;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class QuizData {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -17,6 +21,11 @@ public class QuizData {
 
     public interface QuizSetCallback {
         void onDataLoaded(List<String> quizSetList);
+        void onError(Exception e);
+    }
+
+    public interface LeaderboardDataCallback {
+        void onDataLoaded(List<Leaderboard> leaderboardList);
         void onError(Exception e);
     }
 
@@ -102,6 +111,82 @@ public class QuizData {
             .collection(quizSetName).document(questionId)
             .delete()
             .addOnCompleteListener(listener);
+    }
+
+    public void getLeaderboardList(String quizSetName, LeaderboardDataCallback callback) {
+        db.collection("leaderboard")
+            .document(quizSetName)
+            .collection("users")
+            .get()
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    List<Leaderboard> leaderboardList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        try {
+                            String name = document.getString("name");
+                            int grade = document.getLong("grade").intValue();
+                            float grade10 = document.getDouble("grade10").floatValue();
+                            if (name != null) {
+                                leaderboardList.add(new Leaderboard(name, grade, grade10));
+                            }
+                        } catch (Exception e) {
+                            // skip malformed document
+                        }
+                    }
+                    leaderboardList.sort((o1, o2) -> o2.getGrade() - o1.getGrade());
+                    callback.onDataLoaded(leaderboardList);
+                } else {
+                    callback.onError(task.getException());
+                }
+            });
+    }
+
+    /**
+     * Add or update a user's leaderboard entry. If the user already exists and the new score is better, update it.
+     * Otherwise, add a new entry. Username is fixed as 'user@gmail.com'.
+     */
+    public void addOrUpdateLeaderboardEntry(String quizSetName, int grade, float grade10, OnCompleteListener<Void> listener) {
+        String userName = "user@gmail.com";
+        db.collection("leaderboard")
+                .document(quizSetName)
+                .set(new HashMap<>())  // Tạo document cha rõ ràng
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        db.collection("leaderboard")
+                                .document(quizSetName)
+                                .collection("users")
+                                .document(userName)
+                                .get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    boolean shouldUpdate = true;
+                                    if (documentSnapshot.exists()) {
+                                        Integer oldGrade = documentSnapshot.getLong("grade") != null ? documentSnapshot.getLong("grade").intValue() : null;
+                                        if (oldGrade != null && oldGrade >= grade) {
+                                            shouldUpdate = false;
+                                        }
+                                    }
+                                    if (shouldUpdate) {
+                                        Map<String, Object> data = new HashMap<>();
+                                        data.put("name", userName);
+                                        data.put("grade", grade);
+                                        data.put("grade10", (double) grade10);
+                                        db.collection("leaderboard")
+                                                .document(quizSetName)
+                                                .collection("users")
+                                                .document(userName)
+                                                .set(data)
+                                                .addOnCompleteListener(listener);
+                                    } else {
+                                        if (listener != null) listener.onComplete(null);
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    if (listener != null) listener.onComplete(null);
+                                });
+                    } else {
+                        if (listener != null) listener.onComplete(task);
+                    }
+                });
     }
 
     private java.util.Map<String, Object> quizToMap(Quiz quiz) {

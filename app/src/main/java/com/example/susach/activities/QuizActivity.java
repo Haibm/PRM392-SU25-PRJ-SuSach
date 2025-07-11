@@ -1,5 +1,6 @@
 package com.example.susach.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -39,7 +40,6 @@ public class QuizActivity extends AppCompatActivity {
         btnAnswer3.setOnClickListener(this::onAnswerClick);
         btnAnswer4.setOnClickListener(this::onAnswerClick);
     }
-
 
 
     private void showQuestion() {
@@ -96,6 +96,19 @@ public class QuizActivity extends AppCompatActivity {
                 showQuestion();
             } else {
                 Toast.makeText(this, "Grade: " + quizManager.getScore(), Toast.LENGTH_SHORT).show();
+                // Update leaderboard before navigating
+                quizData.addOrUpdateLeaderboardEntry(
+                    quizSetName,
+                    quizManager.getScore(),
+                    quizManager.getScore10(),
+                    task -> {
+                        Intent intent = new Intent(QuizActivity.this, LeaderboardActivity.class);
+                        intent.putExtra("grade", quizManager.getScore());
+                        intent.putExtra("grade10", quizManager.getScore10());
+                        intent.putExtra("quizSetName", quizSetName);
+                        startActivity(intent);
+                    }
+                );
             }
         }
     }

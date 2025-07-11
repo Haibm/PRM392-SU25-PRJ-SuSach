@@ -8,6 +8,7 @@ public class QuizManager {
     private List<Quiz> quizList;
     private int currentIndex = 0;
     private int score = 0;
+    private float score10 = 0;
 
     public QuizManager(List<Quiz> quizList) {
         this.quizList = quizList;
@@ -41,6 +42,9 @@ public class QuizManager {
 
     public int getScore() {
         return score;
+    }
+    public float getScore10() {
+        return score10 = (float) score / quizList.size() * 10;
     }
 
     public int getTotalQuiz() {
