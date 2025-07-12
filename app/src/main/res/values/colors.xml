@@ -48,6 +48,12 @@
     <!-- Animation Colors -->
     <color name="green_500">#4CAF50</color>
     <color name="red_500">#F44336</color>
+    <color name="blue_500">#2196F3</color>
+
+    <!-- Top 3 Colors -->
+    <color name="gold">#FFD700</color>
+    <color name="silver">#C0C0C0</color>
+    <color name="bronze">#CD7F32</color>
 
 
     <color name="transparent">#00000000</color>

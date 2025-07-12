@@ -38,7 +38,8 @@ public class LeaderboardActivity extends AppCompatActivity {
         tvMyGrade10 = findViewById(R.id.tvMyGrade10);
         rcvLeaderboard = findViewById(R.id.rcvLeaderboard);
         rcvLeaderboard.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new LeaderboardAdapter(userList);
+        int totalQuestions = getIntent().getIntExtra("totalQuestions", 10);
+        adapter = new LeaderboardAdapter(userList, totalQuestions);
         rcvLeaderboard.setAdapter(adapter);
         btnReturn = findViewById(R.id.btnReturn);
     }
@@ -56,12 +57,18 @@ public class LeaderboardActivity extends AppCompatActivity {
         bindingView();
         float grade10 = getIntent().getFloatExtra("grade10", 0);
         int grade = getIntent().getIntExtra("grade", 0);
-        String formattedGrade10 = String.format("%.2f", grade10);
-        tvMyGrade10.setText(String.valueOf(formattedGrade10));
-        tvMyGrade.setText(String.valueOf(grade));
+        int totalQuestions = getIntent().getIntExtra("totalQuestions", 10);
+        String formattedGrade10 = String.format("%.1f", grade10);
+        tvMyGrade10.setText(formattedGrade10);
+        tvMyGrade.setText(grade + "/" + totalQuestions);
         quizSetName = getIntent().getStringExtra("quizSetName");
         if (quizSetName == null) quizSetName = "quiz1";
         quizData = new QuizData();
+        
+        // Set quiz set name
+        TextView tvQuizSetName = findViewById(R.id.tvQuizSetName);
+        loadQuizSetDisplayName(quizSetName, tvQuizSetName);
+        
         loadLeaderboardData();
         btnReturn.setOnClickListener(v -> {
             Intent intent = new Intent(LeaderboardActivity.this, QuizSelectActivity.class);
@@ -69,6 +76,13 @@ public class LeaderboardActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Tự động refresh leaderboard khi quay lại màn hình
+        loadLeaderboardData();
     }
 
     @Override
@@ -86,6 +100,15 @@ public class LeaderboardActivity extends AppCompatActivity {
                 userList.clear();
                 userList.addAll(list);
                 adapter.notifyDataSetChanged();
+                
+                // Log thông tin Top 15
+                Log.d(TAG, "Loaded Top " + list.size() + " users for quizSetName: " + quizSetName);
+                for (int i = 0; i < list.size(); i++) {
+                    Leaderboard user = list.get(i);
+                    Log.d(TAG, "Rank " + (i + 1) + ": " + user.getName() + 
+                          " - Score: " + user.getGrade10() + 
+                          " - Time: " + user.getTotalTime() + "s");
+                }
             }
             @Override
             public void onError(Exception e) {
@@ -97,6 +120,95 @@ public class LeaderboardActivity extends AppCompatActivity {
 
     private void saveLeaderboardData() {
 
+    }
+
+    /**
+     * Lấy tên hiển thị của bộ quiz từ Firebase
+     */
+    private void loadQuizSetDisplayName(String quizSetName, TextView textView) {
+        Log.d(TAG, "Loading display name for quizSetName: " + quizSetName);
+        
+        // Thử collection "quizs" trước
+        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            .collection("quizs")
+            .document(quizSetName)
+            .get()
+            .addOnSuccessListener(documentSnapshot -> {
+                Log.d(TAG, "Document exists in 'quizs': " + documentSnapshot.exists());
+                if (documentSnapshot.exists()) {
+                    // Thử các field name khác nhau
+                    String displayName = documentSnapshot.getString("displayName");
+                    if (displayName == null || displayName.isEmpty()) {
+                        displayName = documentSnapshot.getString("name");
+                    }
+                    if (displayName == null || displayName.isEmpty()) {
+                        displayName = documentSnapshot.getString("title");
+                    }
+                    if (displayName == null || displayName.isEmpty()) {
+                        displayName = documentSnapshot.getString("quizSetName");
+                    }
+                    
+                    Log.d(TAG, "Display name from Firebase: " + displayName);
+                    if (displayName != null && !displayName.isEmpty()) {
+                        textView.setText(displayName);
+                        Log.d(TAG, "Set display name to: " + displayName);
+                    } else {
+                        // Fallback nếu không có displayName
+                        String fallbackName = quizSetName;
+                        textView.setText(fallbackName);
+                        Log.d(TAG, "Set fallback name to: " + fallbackName);
+                    }
+                } else {
+                    // Thử collection "quizSets" nếu không tìm thấy trong "quizs"
+                    tryAlternativeCollection(quizSetName, textView);
+                }
+            })
+            .addOnFailureListener(e -> {
+                Log.e(TAG, "Error loading from 'quizs' collection", e);
+                // Thử collection khác nếu có lỗi
+                tryAlternativeCollection(quizSetName, textView);
+            });
+    }
+    
+    private void tryAlternativeCollection(String quizSetName, TextView textView) {
+        Log.d(TAG, "Trying alternative collection for: " + quizSetName);
+        
+        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            .collection("quizSets")
+            .document(quizSetName)
+            .get()
+            .addOnSuccessListener(documentSnapshot -> {
+                Log.d(TAG, "Document exists in 'quizSets': " + documentSnapshot.exists());
+                if (documentSnapshot.exists()) {
+                    String displayName = documentSnapshot.getString("displayName");
+                    if (displayName == null || displayName.isEmpty()) {
+                        displayName = documentSnapshot.getString("name");
+                    }
+                    if (displayName == null || displayName.isEmpty()) {
+                        displayName = documentSnapshot.getString("title");
+                    }
+                    
+                    if (displayName != null && !displayName.isEmpty()) {
+                        textView.setText(displayName);
+                        Log.d(TAG, "Set display name from alternative collection: " + displayName);
+                    } else {
+                        String fallbackName = "Bộ Quiz 1" + quizSetName;
+                        textView.setText(fallbackName);
+                        Log.d(TAG, "Set fallback name from alternative collection: " + fallbackName);
+                    }
+                } else {
+                    // Final fallback
+                    String fallbackName = "Bộ Quiz 2" + quizSetName;
+                    textView.setText(fallbackName);
+                    Log.d(TAG, "Document doesn't exist in any collection, set fallback name to: " + fallbackName);
+                }
+            })
+            .addOnFailureListener(e -> {
+                // Final fallback nếu có lỗi
+                String fallbackName = "Bộ Quiz 3" + quizSetName;
+                textView.setText(fallbackName);
+                Log.e(TAG, "Error loading from alternative collection", e);
+            });
     }
 
     interface LeaderboardDataCallback {
