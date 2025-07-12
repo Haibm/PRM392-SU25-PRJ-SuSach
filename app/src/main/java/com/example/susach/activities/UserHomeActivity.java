@@ -45,9 +45,9 @@ public class UserHomeActivity extends AppCompatActivity {
                 Toast.makeText(this, "Tính năng Khám phá sẽ được phát triển", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (itemId == R.id.navigation_quiz) {
-                // Chuyển sang QuizActivity nếu có
-                // startActivity(new Intent(this, QuizActivity.class));
-                Toast.makeText(this, "Tính năng Quiz sẽ được phát triển", Toast.LENGTH_SHORT).show();
+                // Chuyển sang QuizSelectActivity
+                Intent intent = new Intent(this, QuizSelectActivity.class);
+                startActivity(intent);
                 return true;
             } else if (itemId == R.id.navigation_profile) {
                 // Chuyển sang Profile

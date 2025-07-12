@@ -48,6 +48,9 @@ public class QuizSelectActivity extends AppCompatActivity {
                 // Di toi bo quiz
                 Intent intent = new Intent(QuizSelectActivity.this, QuizActivity.class);
                 intent.putExtra("quizSetName", quizSetName);
+                // Lấy username của user hiện tại
+                String currentUserName = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                intent.putExtra("userName", currentUserName);
                 startActivity(intent);
             }
 

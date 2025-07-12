@@ -38,10 +38,14 @@ public class QuizActivity extends AppCompatActivity {
     private QuizManager quizManager;
     private QuizData quizData;
     private String quizSetName;
+    private String currentUserName;
     private int currentQuestionIndex = 0;
     private int totalQuestions = 0;
     private boolean isAnswered = false;
     private int selectedAnswer = -1;
+    private long startTime; // Thời gian bắt đầu làm bài
+    private long questionStartTime; // Thời gian bắt đầu câu hỏi hiện tại
+    private int totalTimeSeconds = 0; // Tổng thời gian làm bài (giây)
     
     // Animation constants
     private static final int ANIMATION_DURATION = 300;
@@ -85,7 +89,8 @@ public class QuizActivity extends AppCompatActivity {
             tvAnswer2.setText(quiz.getAnswer2());
             tvAnswer3.setText(quiz.getAnswer3());
             tvAnswer4.setText(quiz.getAnswer4());
-            
+            // Ghi nhận thời gian bắt đầu câu hỏi
+            questionStartTime = System.currentTimeMillis();
             // Update progress
             updateProgress();
             // Reset answer state
@@ -114,18 +119,25 @@ public class QuizActivity extends AppCompatActivity {
     }
     
     private void finishQuiz() {
-        Toast.makeText(this, "Grade: " + quizManager.getScore(), Toast.LENGTH_SHORT).show();
+        // Sử dụng totalTimeSeconds đã cộng dồn
+        Toast.makeText(this, "Grade: " + quizManager.getScore() + " - Thời gian: " + totalTimeSeconds + "s", Toast.LENGTH_SHORT).show();
         // Update leaderboard before navigating
         quizData.addOrUpdateLeaderboardEntry(
             quizSetName,
+            currentUserName,
             quizManager.getScore(),
             quizManager.getScore10(),
+            totalTimeSeconds,
             task -> {
-                Intent intent = new Intent(QuizActivity.this, LeaderboardActivity.class);
-                intent.putExtra("grade", quizManager.getScore());
-                intent.putExtra("grade10", quizManager.getScore10());
-                intent.putExtra("quizSetName", quizSetName);
-                startActivity(intent);
+                // Delay nhỏ để đảm bảo Firebase đã cập nhật xong
+                new android.os.Handler().postDelayed(() -> {
+                    Intent intent = new Intent(QuizActivity.this, LeaderboardActivity.class);
+                    intent.putExtra("grade", quizManager.getScore());
+                    intent.putExtra("grade10", quizManager.getScore10());
+                    intent.putExtra("totalQuestions", totalQuestions);
+                    intent.putExtra("quizSetName", quizSetName);
+                    startActivity(intent);
+                }, 500); // Delay 500ms
             }
         );
     }
@@ -144,6 +156,10 @@ public class QuizActivity extends AppCompatActivity {
                 tvTimer.setText("0s");
                 if (!isAnswered) {
                     isAnswered = true;
+                    // Tính thời gian trả lời câu hỏi này (hết giờ)
+                    long answerTime = System.currentTimeMillis();
+                    long questionTime = answerTime - questionStartTime;
+                    totalTimeSeconds += (int) Math.ceil(questionTime / 1000.0);
                     Toast.makeText(QuizActivity.this, "Hết giờ!", Toast.LENGTH_SHORT).show();
                     showAnswerResult(-1); // -1 nghĩa là không chọn đáp án nào
                 }
@@ -165,7 +181,13 @@ public class QuizActivity extends AppCompatActivity {
         bindingView();
         bindingAction();
         quizSetName = getIntent().getStringExtra("quizSetName");
+        currentUserName = getIntent().getStringExtra("userName");
+        if (currentUserName == null) {
+            // Fallback to current user email if username not provided
+            currentUserName = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        }
         quizData = new QuizData();
+        startTime = System.currentTimeMillis(); // Ghi nhận thời gian bắt đầu
         loadQuizData();
     }
 
@@ -186,6 +208,10 @@ public class QuizActivity extends AppCompatActivity {
     private void onAnswerClick(View view) {
         if (isAnswered) return; // Prevent multiple clicks
         if (countDownTimer != null) countDownTimer.cancel();
+        // Tính thời gian trả lời câu hỏi hiện tại
+        long answerTime = System.currentTimeMillis();
+        long questionTime = answerTime - questionStartTime;
+        totalTimeSeconds += (int) Math.ceil(questionTime / 1000.0);
         int chosen = 0;
         if (view.getId() == R.id.cardAnswer1) chosen = 1;
         else if (view.getId() == R.id.cardAnswer2) chosen = 2;

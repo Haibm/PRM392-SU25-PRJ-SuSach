@@ -126,15 +126,40 @@ public class QuizData {
                             String name = document.getString("name");
                             int grade = document.getLong("grade").intValue();
                             float grade10 = document.getDouble("grade10").floatValue();
+                            int totalTime = document.getLong("totalTime") != null ? 
+                                document.getLong("totalTime").intValue() : 0;
+                            
+                            // Debug log để kiểm tra dữ liệu đọc từ Firebase
+                            android.util.Log.d("QuizData", "Reading from Firebase: " +
+                                "Name=" + name +
+                                ", Grade=" + grade +
+                                ", Grade10=" + grade10 +
+                                ", TotalTime=" + totalTime + "s");
+                            
                             if (name != null) {
-                                leaderboardList.add(new Leaderboard(name, grade, grade10));
+                                leaderboardList.add(new Leaderboard(name, grade, grade10, totalTime));
                             }
                         } catch (Exception e) {
                             // skip malformed document
+                            android.util.Log.e("QuizData", "Error reading document: " + e.getMessage());
                         }
                     }
-                    leaderboardList.sort((o1, o2) -> o2.getGrade() - o1.getGrade());
-                    callback.onDataLoaded(leaderboardList);
+                    // Sắp xếp theo điểm cao nhất, nếu bằng nhau thì theo thời gian ngắn nhất
+                    leaderboardList.sort((o1, o2) -> {
+                        if (o2.getGrade10() != o1.getGrade10()) {
+                            return Float.compare(o2.getGrade10(), o1.getGrade10());
+                        } else {
+                            return Integer.compare(o1.getTotalTime(), o2.getTotalTime());
+                        }
+                    });
+                    
+                    // Chỉ lấy Top 15 người làm đúng và nhanh nhất
+                    List<Leaderboard> top15List = new ArrayList<>();
+                    for (int i = 0; i < Math.min(15, leaderboardList.size()); i++) {
+                        top15List.add(leaderboardList.get(i));
+                    }
+                    
+                    callback.onDataLoaded(top15List);
                 } else {
                     callback.onError(task.getException());
                 }
@@ -143,10 +168,9 @@ public class QuizData {
 
     /**
      * Add or update a user's leaderboard entry. If the user already exists and the new score is better, update it.
-     * Otherwise, add a new entry. Username is fixed as 'user@gmail.com'.
+     * Otherwise, add a new entry.
      */
-    public void addOrUpdateLeaderboardEntry(String quizSetName, int grade, float grade10, OnCompleteListener<Void> listener) {
-        String userName = "user@gmail.com";
+    public void addOrUpdateLeaderboardEntry(String quizSetName, String userName, int grade, float grade10, int totalTime, OnCompleteListener<Void> listener) {
         db.collection("leaderboard")
                 .document(quizSetName)
                 .set(new HashMap<>())  // Tạo document cha rõ ràng
@@ -161,8 +185,24 @@ public class QuizData {
                                     boolean shouldUpdate = true;
                                     if (documentSnapshot.exists()) {
                                         Integer oldGrade = documentSnapshot.getLong("grade") != null ? documentSnapshot.getLong("grade").intValue() : null;
-                                        if (oldGrade != null && oldGrade >= grade) {
-                                            shouldUpdate = false;
+                                        Float oldGrade10 = documentSnapshot.getDouble("grade10") != null ? documentSnapshot.getDouble("grade10").floatValue() : null;
+                                        Integer oldTotalTime = documentSnapshot.getLong("totalTime") != null ? documentSnapshot.getLong("totalTime").intValue() : null;
+                                        
+                                        if (oldGrade10 != null) {
+                                            if (grade10 > oldGrade10) {
+                                                // Điểm mới cao hơn
+                                                shouldUpdate = true;
+                                            } else if (grade10 == oldGrade10) {
+                                                // Điểm bằng nhau, so sánh thời gian
+                                                if (oldTotalTime != null && totalTime < oldTotalTime) {
+                                                    // Thời gian mới ngắn hơn
+                                                    shouldUpdate = true;
+                                                } else {
+                                                    shouldUpdate = false;
+                                                }
+                                            } else {
+                                                shouldUpdate = false;
+                                            }
                                         }
                                     }
                                     if (shouldUpdate) {
@@ -170,6 +210,15 @@ public class QuizData {
                                         data.put("name", userName);
                                         data.put("grade", grade);
                                         data.put("grade10", (double) grade10);
+                                        data.put("totalTime", totalTime);
+                                        
+                                        // Debug log để kiểm tra dữ liệu lưu
+                                        android.util.Log.d("QuizData", "Saving to Firebase: " +
+                                            "Name=" + userName +
+                                            ", Grade=" + grade +
+                                            ", Grade10=" + grade10 +
+                                            ", TotalTime=" + totalTime + "s");
+                                        
                                         db.collection("leaderboard")
                                                 .document(quizSetName)
                                                 .collection("users")
