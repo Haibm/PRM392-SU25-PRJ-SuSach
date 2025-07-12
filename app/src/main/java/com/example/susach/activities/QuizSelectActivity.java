@@ -18,6 +18,8 @@ import com.example.susach.R;
 import com.example.susach.adapters.QuizSelectAdapter;
 import com.example.susach.adapters.QuizSetAdapter;
 import com.example.susach.firebase.QuizData;
+import com.example.susach.models.QuizSetInfo;
+import com.example.susach.models.Quiz;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,7 @@ public class QuizSelectActivity extends AppCompatActivity {
     RecyclerView rcvQuizSetList;;
     QuizData quizData = new QuizData();
     private QuizSelectAdapter adapter;
-    private List<String> quizSetList = new ArrayList<>();
+    private List<QuizSetInfo> quizSetList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,8 +62,32 @@ public class QuizSelectActivity extends AppCompatActivity {
             @Override
             public void onDataLoaded(List<String> quizSetNames) {
                 quizSetList.clear();
-                quizSetList.addAll(quizSetNames);
-                adapter.notifyDataSetChanged();
+                if (quizSetNames.isEmpty()) {
+                    adapter.notifyDataSetChanged();
+                    return;
+                }
+                // Lấy số lượng quiz cho từng bộ đề
+                final int[] loadedCount = {0};
+                for (String quizSetName : quizSetNames) {
+                    quizData.getQuizList(quizSetName, new QuizData.QuizDataCallback() {
+                        @Override
+                        public void onDataLoaded(List<Quiz> quizList) {
+                            quizSetList.add(new QuizSetInfo(quizSetName, quizList.size()));
+                            loadedCount[0]++;
+                            if (loadedCount[0] == quizSetNames.size()) {
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                        @Override
+                        public void onError(Exception e) {
+                            quizSetList.add(new QuizSetInfo(quizSetName, 0));
+                            loadedCount[0]++;
+                            if (loadedCount[0] == quizSetNames.size()) {
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    });
+                }
             }
             @Override
             public void onError(Exception e) {
