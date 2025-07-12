@@ -69,7 +69,7 @@
             android:name=".activities.ManageArticleActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.QuizSelectActivity"
+                android:name=".activities.QuizSelectActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.susach.R;
-import com.example.susach.models.Quiz;
+import com.example.susach.models.QuizSetInfo;
 
 import java.util.List;
 
@@ -19,10 +19,10 @@ public class QuizSelectAdapter extends RecyclerView.Adapter<QuizSelectAdapter.Qu
         void onQuizSelectClick(String quizSetName);
     }
 
-    private List<String> quizSetList;
+    private List<QuizSetInfo> quizSetList;
     private QuizSelectListener listener;
 
-    public QuizSelectAdapter(List<String> quizSetList, QuizSelectListener listener) {
+    public QuizSelectAdapter(List<QuizSetInfo> quizSetList, QuizSelectListener listener) {
         this.quizSetList = quizSetList;
         this.listener = listener;
     }
@@ -39,9 +39,15 @@ public class QuizSelectAdapter extends RecyclerView.Adapter<QuizSelectAdapter.Qu
 
     @Override
     public void onBindViewHolder(@NonNull QuizSelectViewHolder holder, int position) {
-        String quizSetName = quizSetList.get(position);
-        holder.tvQuizSelectName.setText(quizSetName);
-        holder.itemView.setTag(quizSetName);
+        QuizSetInfo quizSetInfo = quizSetList.get(position);
+        holder.tvQuizSetName.setText(quizSetInfo.name);
+        holder.tvQuizSetDesc.setText("Bộ đề gồm " + quizSetInfo.quizCount + " câu hỏi");
+        holder.btnStartQuiz.setOnClickListener(v -> {
+            if (listener != null) listener.onQuizSelectClick(quizSetInfo.name);
+        });
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onQuizSelectClick(quizSetInfo.name);
+        });
     }
 
     @Override
@@ -50,7 +56,7 @@ public class QuizSelectAdapter extends RecyclerView.Adapter<QuizSelectAdapter.Qu
     }
 
     private void bindingViewHolder(QuizSelectViewHolder holder) {
-        holder.tvQuizSelectName = holder.itemView.findViewById(R.id.tvQuizSelectName);
+        holder.tvQuizSetName = holder.itemView.findViewById(R.id.tvQuizSetName);
     }
 
     private void bindingActionHolder(QuizSelectViewHolder holder) {
@@ -65,9 +71,13 @@ public class QuizSelectAdapter extends RecyclerView.Adapter<QuizSelectAdapter.Qu
     }
 
     static class QuizSelectViewHolder extends RecyclerView.ViewHolder {
-        TextView tvQuizSelectName;
+        TextView tvQuizSetName, tvQuizSetDesc;
+        Button btnStartQuiz;
         public QuizSelectViewHolder(@NonNull View itemView) {
             super(itemView);
+            tvQuizSetName = itemView.findViewById(R.id.tvQuizSetName);
+            tvQuizSetDesc = itemView.findViewById(R.id.tvQuizSetDesc);
+            btnStartQuiz = itemView.findViewById(R.id.btnStartQuiz);
         }
     }
 }
