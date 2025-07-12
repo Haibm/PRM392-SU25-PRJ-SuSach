@@ -16,6 +16,7 @@ import com.example.susach.R;
 public class StaffActivity extends AppCompatActivity {
 
     private Button btnManageArticle;
+    private Button btnManageQuiz;
     private Button btnLogout;
     private String staffEmail;
 
@@ -31,6 +32,7 @@ public class StaffActivity extends AppCompatActivity {
         });
 
         btnManageArticle = findViewById(R.id.btn_manage_article);
+        btnManageQuiz = findViewById(R.id.btn_manage_quiz);
         btnLogout = findViewById(R.id.btn_logout);
 
         // Lấy email staff từ Intent
@@ -40,6 +42,15 @@ public class StaffActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(StaffActivity.this, ManageArticleActivity.class);
+                intent.putExtra("staff_email", staffEmail);
+                startActivity(intent);
+            }
+        });
+
+        btnManageQuiz.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StaffActivity.this, QuizSetListActivity.class);
                 intent.putExtra("staff_email", staffEmail);
                 startActivity(intent);
             }

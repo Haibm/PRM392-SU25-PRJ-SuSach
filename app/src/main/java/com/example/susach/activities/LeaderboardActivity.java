@@ -1,9 +1,11 @@
 package com.example.susach.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -29,6 +31,7 @@ public class LeaderboardActivity extends AppCompatActivity {
     private List<Leaderboard> userList = new ArrayList<>();
     private QuizData quizData;
     private String quizSetName;
+    private Button btnReturn;
 
     private void bindingView() {
         tvMyGrade = findViewById(R.id.tvMyGrade);
@@ -37,6 +40,7 @@ public class LeaderboardActivity extends AppCompatActivity {
         rcvLeaderboard.setLayoutManager(new LinearLayoutManager(this));
         adapter = new LeaderboardAdapter(userList);
         rcvLeaderboard.setAdapter(adapter);
+        btnReturn = findViewById(R.id.btnReturn);
     }
 
     @Override
@@ -59,6 +63,20 @@ public class LeaderboardActivity extends AppCompatActivity {
         if (quizSetName == null) quizSetName = "quiz1";
         quizData = new QuizData();
         loadLeaderboardData();
+        btnReturn.setOnClickListener(v -> {
+            Intent intent = new Intent(LeaderboardActivity.this, QuizSelectActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(LeaderboardActivity.this, QuizSelectActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 
     private void loadLeaderboardData() {

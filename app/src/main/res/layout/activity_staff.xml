@@ -97,6 +97,20 @@
             android:padding="12dp"
             android:textSize="14sp" />
 
+        <!-- Manage Quiz Button -->
+        <Button
+            android:id="@+id/btn_manage_quiz"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:text="Manage Quiz"
+            android:textColor="@color/white"
+            android:background="@drawable/lavender_border"
+            android:padding="12dp"
+            android:textSize="14sp" />
+
         <!-- Logout Button -->
         <Button
             android:id="@+id/btn_logout"
