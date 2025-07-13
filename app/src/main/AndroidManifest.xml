@@ -71,6 +71,7 @@
         <activity
             android:name=".activities.ManageArticleActivity"
             android:exported="false" />
+
         <activity
             android:name=".activities.SplashActivity"
             android:exported="true" >
