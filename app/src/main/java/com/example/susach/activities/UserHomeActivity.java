@@ -33,30 +33,8 @@ public class UserHomeActivity extends AppCompatActivity {
         eventManager = new EventManager();
         loadEvents();
 
-        //Dat: Xử lý chuyển trang cho BottomNavigationView
-        binding.bottomNavigation.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.navigation_home) {
-                // Đang ở Home, không làm gì
-                return true;
-            } else if (itemId == R.id.navigation_explore) {
-                // Chuyển sang ExploreActivity nếu có
-                // startActivity(new Intent(this, ExploreActivity.class));
-                Toast.makeText(this, "Tính năng Khám phá sẽ được phát triển", Toast.LENGTH_SHORT).show();
-                return true;
-            } else if (itemId == R.id.navigation_quiz) {
-                // Chuyển sang QuizActivity nếu có
-                // startActivity(new Intent(this, QuizActivity.class));
-                Toast.makeText(this, "Tính năng Quiz sẽ được phát triển", Toast.LENGTH_SHORT).show();
-                return true;
-            } else if (itemId == R.id.navigation_profile) {
-                // Chuyển sang Profile
-                Intent intent = new Intent(this, UserProfileActivity.class);
-                startActivity(intent);
-                return true;
-            }
-            return false;
-        });
+        ////Dat: Xử lý BottomNavigationView
+        setupBottomNavigation();
         binding.bottomNavigation.setSelectedItemId(R.id.navigation_home);
     }
 
@@ -79,5 +57,32 @@ public class UserHomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EventDetailActivity.class);
         intent.putExtra("event_id", event.getId());
         startActivity(intent);
+    }
+
+    ////Dat: Method xử lý BottomNavigationView (có thể tái sử dụng)
+    private void setupBottomNavigation() {
+        binding.bottomNavigation.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_home) {
+                // Đang ở Home, không làm gì
+                return true;
+            } else if (itemId == R.id.navigation_explore) {
+                ////Dat: Chuyển sang ExploreActivity
+                Intent intent = new Intent(this, ExploreActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (itemId == R.id.navigation_quiz) {
+                ////Dat: Chuyển sang QuizSelectActivity
+                Intent intent = new Intent(this, QuizSelectActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (itemId == R.id.navigation_profile) {
+                // Chuyển sang Profile
+                Intent intent = new Intent(this, UserProfileActivity.class);
+                startActivity(intent);
+                return true;
+            }
+            return false;
+        });
     }
 } 
