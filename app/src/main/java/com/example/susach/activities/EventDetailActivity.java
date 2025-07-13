@@ -12,6 +12,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import java.util.Date;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.widget.ImageView;
+import java.io.InputStream;
+import java.net.URL;
 
 public class EventDetailActivity extends AppCompatActivity {
     private ActivityEventDetailBinding binding;
@@ -73,11 +79,14 @@ public class EventDetailActivity extends AppCompatActivity {
                     binding.tvContents.setText(event.getContents());
                     binding.tvStartDate.setText(String.valueOf(event.getStartDate()));
                     binding.tvEndDate.setText(String.valueOf(event.getEndDate()));
-                    binding.tvImageUrl.setText(event.getImageUrl());
+                    // binding.tvImageUrl.setText(event.getImageUrl()); // Đã bỏ trường này
                     binding.tvSummary.setText(event.getSummary());
                     binding.tvImageContent.setText(event.getImageContent());
                     binding.tvCreateBy.setText(event.getCreateBy());
                     binding.tvUpdateBy.setText(event.getUpdateBy());
+
+                    // Load ảnh bằng Java thuần
+                    loadImageFromUrl(event.getImageUrl(), binding.ivEventImage);
                 }
             }
             @Override
@@ -86,5 +95,26 @@ public class EventDetailActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    public void loadImageFromUrl(String url, ImageView imageView) {
+        new AsyncTask<String, Void, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground(String... params) {
+                try {
+                    InputStream in = new URL(params[0]).openStream();
+                    return BitmapFactory.decodeStream(in);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(Bitmap result) {
+                if (result != null) {
+                    imageView.setImageBitmap(result);
+                }
+            }
+        }.execute(url);
     }
 } 
