@@ -12,7 +12,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.susach.R;
+import com.example.susach.dialogs.SavePostDialogFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class UserProfileActivity extends AppCompatActivity {
 
@@ -40,6 +42,27 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
             });
         }
+
+        // Thêm xử lý mở dialog danh sách SavePost cho dòng mới
+        findViewById(R.id.saved_posts_layout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SavePostDialogFragment dialog = new SavePostDialogFragment();
+                dialog.show(getSupportFragmentManager(), "SavePostDialog");
+            }
+        });
+
+        // Thêm xử lý đăng xuất
+        findViewById(R.id.btn_logout_profile).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(UserProfileActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     ////Dat: Method xử lý BottomNavigationView (có thể tái sử dụng)

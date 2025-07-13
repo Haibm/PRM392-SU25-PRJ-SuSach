@@ -28,7 +28,7 @@
                 android:id="@+id/tv_greeting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Xin chào, Torin"
+                android:text="Xin chào"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"/>
@@ -46,66 +46,31 @@
                 android:padding="12dp"
                 android:contentDescription="Avatar"/>
 
-            <!-- Viết gì đó giới thiệu -->
-            <TextView
-                android:id="@+id/tv_bio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Viết gì đó giới thiệu nhé"
-                android:textColor="@color/gray"
-                android:textSize="14sp"
-                android:layout_marginTop="8dp"/>
-
-            <!-- Số liệu: Theo dõi, Người theo dõi, Đã thích -->
-            <LinearLayout
+            <!-- Button: Đăng xuất -->
+            <Button
+                android:id="@+id/btn_logout_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginTop="16dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
-                    <TextView android:id="@+id/tv_following" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="10" android:textStyle="bold" android:textSize="18sp" android:textColor="@color/black"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Theo dõi" android:textColor="@color/gray" android:textSize="12sp"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
-                    <TextView android:id="@+id/tv_followers" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="3" android:textStyle="bold" android:textSize="18sp" android:textColor="@color/black"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Người theo dõi" android:textColor="@color/gray" android:textSize="12sp"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center">
-                    <TextView android:id="@+id/tv_likes" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="5" android:textStyle="bold" android:textSize="18sp" android:textColor="@color/black"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Đã thích" android:textColor="@color/gray" android:textSize="12sp"/>
-                </LinearLayout>
-            </LinearLayout>
+                android:text="Đăng xuất"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="@color/red"
+                android:textColor="@color/white"
+                android:drawableStart="@drawable/baseline_lock_24"
+                android:drawablePadding="8dp"
+                android:layout_gravity="center_horizontal" />
 
             <!-- Cá nhân -->
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cá nhân" android:textStyle="bold" android:textColor="@color/lavender" android:textSize="16sp" android:layout_marginTop="24dp"/>
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/lavender" android:layout_marginTop="4dp"/>
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="8dp">
+                <LinearLayout android:id="@+id/saved_posts_layout" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingVertical="8dp">
+                    <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_save" app:tint="@color/lavender"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Bài viết đã lưu" android:textColor="@color/black" android:textSize="15sp" android:layout_marginStart="12dp"/>
+                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/arrow_forward" app:tint="@color/gray"/>
+                </LinearLayout>
                 <LinearLayout android:id="@+id/info_account_layout" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingVertical="8dp">
                     <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/baseline_person_24" app:tint="@color/lavender"/>
                     <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Thông tin tài khoản" android:textColor="@color/black" android:textSize="15sp" android:layout_marginStart="12dp"/>
-                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/arrow_forward" app:tint="@color/gray"/>
-                </LinearLayout>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingVertical="8dp">
-                    <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/baseline_email_24" app:tint="@color/lavender"/>
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Liên kết ngân hàng" android:textColor="@color/black" android:textSize="15sp" android:layout_marginStart="12dp"/>
                     <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/arrow_forward" app:tint="@color/gray"/>
                 </LinearLayout>
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingVertical="8dp">

@@ -9,14 +9,20 @@ import com.example.susach.adapters.EventAdapter;
 import com.example.susach.databinding.ActivityManageArticleBinding;
 import com.example.susach.managers.EventManager;
 import com.example.susach.models.Event;
+import com.example.susach.models.Era;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
+import android.widget.ArrayAdapter;
 
 public class ManageArticleActivity extends AppCompatActivity {
     private ActivityManageArticleBinding binding;
     private EventAdapter eventAdapter;
     private List<Event> eventList = new ArrayList<>();
     private EventManager eventManager;
+    private List<Era> eraList = new ArrayList<>();
+    private ArrayAdapter<String> eraAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,12 +35,33 @@ public class ManageArticleActivity extends AppCompatActivity {
         binding.recyclerEvents.setAdapter(eventAdapter);
 
         eventManager = new EventManager();
+        loadEras(); // Thêm dòng này để load era lên spinner
         loadEvents();
 
         binding.btnAdd.setOnClickListener(v -> addOrUpdateEvent(true));
         binding.btnUpdate.setOnClickListener(v -> addOrUpdateEvent(false));
         binding.btnDelete.setOnClickListener(v -> deleteEvent());
         binding.btnBack.setOnClickListener(v -> finish());
+    }
+
+    private void loadEras() {
+        FirebaseFirestore.getInstance().collection("eras").get().addOnSuccessListener(query -> {
+            eraList.clear();
+            List<String> eraNames = new ArrayList<>();
+            for (DocumentSnapshot doc : query) {
+                Era era = doc.toObject(Era.class);
+                if (era != null) {
+                    era.setId(doc.getId());
+                    eraList.add(era);
+                    eraNames.add(era.getName());
+                }
+            }
+            eraAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, eraNames);
+            eraAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            binding.spinnerEraId.setAdapter(eraAdapter);
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Lỗi tải thời kỳ: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void loadEvents() {
@@ -62,7 +89,13 @@ public class ManageArticleActivity extends AppCompatActivity {
         binding.etImageUrl.setText(event.getImageUrl());
         binding.etSummary.setText(event.getSummary());
         binding.etImageContent.setText(event.getImageContent());
-        // TODO: set era spinner selection
+        // Set spinner era theo eraId của event
+        for (int i = 0; i < eraList.size(); i++) {
+            if (eraList.get(i).getId().equals(event.getEraId())) {
+                binding.spinnerEraId.setSelection(i);
+                break;
+            }
+        }
     }
 
     private void addOrUpdateEvent(boolean isAdd) {
@@ -75,8 +108,9 @@ public class ManageArticleActivity extends AppCompatActivity {
         String imageUrl = binding.etImageUrl.getText().toString().trim();
         String summary = binding.etSummary.getText().toString().trim();
         String imageContent = binding.etImageContent.getText().toString().trim();
-        // TODO: get eraId from spinner
-        String eraId = "";
+        // Lấy eraId từ spinner
+        int eraPos = binding.spinnerEraId.getSelectedItemPosition();
+        String eraId = eraPos >= 0 && eraPos < eraList.size() ? eraList.get(eraPos).getId() : "";
         int startDate, endDate;
         try {
             startDate = Integer.parseInt(startDateStr);
