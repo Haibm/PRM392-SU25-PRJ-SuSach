@@ -27,6 +27,7 @@ import com.example.susach.R;
 import java.util.List;
 import com.example.susach.models.Quiz;
 import com.example.susach.managers.QuizManager;
+import com.example.susach.managers.SoundManager;
 import com.example.susach.firebase.QuizData;
 
 public class QuizActivity extends AppCompatActivity {
@@ -37,6 +38,7 @@ public class QuizActivity extends AppCompatActivity {
     private LinearProgressIndicator progressBar;
     private QuizManager quizManager;
     private QuizData quizData;
+    private SoundManager soundManager;
     private String quizSetName;
     private String currentUserName;
     private int currentQuestionIndex = 0;
@@ -187,6 +189,7 @@ public class QuizActivity extends AppCompatActivity {
             currentUserName = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getEmail();
         }
         quizData = new QuizData();
+        soundManager = new SoundManager(this);
         startTime = System.currentTimeMillis(); // Ghi nhận thời gian bắt đầu
         loadQuizData();
     }
@@ -271,16 +274,21 @@ public class QuizActivity extends AppCompatActivity {
         // Check answer and update score
         quizManager.checkAnswer(chosenAnswer);
         
+        // Play sound based on answer result
+        if (chosenAnswer == correctAnswer) {
+            soundManager.playCorrectSound();
+        } else {
+            soundManager.playWrongSound();
+        }
+        
         // Update score display with animation
         animateScoreUpdate();
         
         for (int i = 0; i < answerCards.length; i++) {
             if (i == (correctAnswer - 1)) {
-                // Correct answer - green
                 answerCards[i].setCardBackgroundColor(ContextCompat.getColor(this, R.color.green_500));
                 animateCorrectAnswer(answerCards[i]);
             } else if (i == (chosenAnswer - 1)) {
-                // Wrong selected answer - red
                 answerCards[i].setCardBackgroundColor(ContextCompat.getColor(this, R.color.red_500));
                 animateIncorrectAnswer(answerCards[i]);
             }
@@ -361,6 +369,9 @@ public class QuizActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         if (countDownTimer != null) countDownTimer.cancel();
+        if (soundManager != null) {
+            soundManager.release();
+        }
         super.onDestroy();
     }
 }

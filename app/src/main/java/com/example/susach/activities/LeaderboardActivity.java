@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.susach.R;
 import com.example.susach.models.Leaderboard;
 import com.example.susach.adapters.LeaderboardAdapter;
+import com.example.susach.managers.SoundManager;
 import com.example.susach.firebase.QuizData;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -30,6 +31,7 @@ public class LeaderboardActivity extends AppCompatActivity {
     private LeaderboardAdapter adapter;
     private List<Leaderboard> userList = new ArrayList<>();
     private QuizData quizData;
+    private SoundManager soundManager;
     private String quizSetName;
     private Button btnReturn;
 
@@ -64,12 +66,19 @@ public class LeaderboardActivity extends AppCompatActivity {
         quizSetName = getIntent().getStringExtra("quizSetName");
         if (quizSetName == null) quizSetName = "quiz1";
         quizData = new QuizData();
+        soundManager = new SoundManager(this);
         
         // Set quiz set name
         TextView tvQuizSetName = findViewById(R.id.tvQuizSetName);
         loadQuizSetDisplayName(quizSetName, tvQuizSetName);
         
         loadLeaderboardData();
+        
+        // Play finish sound when leaderboard is displayed
+        if (soundManager != null) {
+            soundManager.playFinishSound();
+        }
+        
         btnReturn.setOnClickListener(v -> {
             Intent intent = new Intent(LeaderboardActivity.this, QuizSelectActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -209,6 +218,14 @@ public class LeaderboardActivity extends AppCompatActivity {
                 textView.setText(fallbackName);
                 Log.e(TAG, "Error loading from alternative collection", e);
             });
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (soundManager != null) {
+            soundManager.release();
+        }
+        super.onDestroy();
     }
 
     interface LeaderboardDataCallback {
