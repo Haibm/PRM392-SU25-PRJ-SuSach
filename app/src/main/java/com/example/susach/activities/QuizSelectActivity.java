@@ -20,6 +20,7 @@ import com.example.susach.adapters.QuizSetAdapter;
 import com.example.susach.firebase.QuizData;
 import com.example.susach.models.QuizSetInfo;
 import com.example.susach.models.Quiz;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,9 @@ public class QuizSelectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_quiz_select);
+
+        ////Dat: Xử lý BottomNavigationView
+        setupBottomNavigation();
 
         bindingView();
         loadQuizSetList();
@@ -96,6 +100,28 @@ public class QuizSelectActivity extends AppCompatActivity {
             public void onError(Exception e) {
                 Toast.makeText(QuizSelectActivity.this, "Lỗi tải danh sách bộ quiz", Toast.LENGTH_SHORT).show();
             }
+        });
+    }
+
+    ////Dat: Method xử lý BottomNavigationView (có thể tái sử dụng)
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
+        bottomNavigation.setSelectedItemId(R.id.navigation_quiz);
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_home) {
+                startActivity(new Intent(this, UserHomeActivity.class));
+                return true;
+            } else if (itemId == R.id.navigation_explore) {
+                startActivity(new Intent(this, ExploreActivity.class));
+                return true;
+            } else if (itemId == R.id.navigation_quiz) {
+                return true;
+            } else if (itemId == R.id.navigation_profile) {
+                startActivity(new Intent(this, UserProfileActivity.class));
+                return true;
+            }
+            return false;
         });
     }
 }

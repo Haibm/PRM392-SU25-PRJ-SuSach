@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.susach.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class UserProfileActivity extends AppCompatActivity {
 
@@ -26,6 +27,8 @@ public class UserProfileActivity extends AppCompatActivity {
             return insets;
         });
 
+        ////Dat: Xử lý BottomNavigationView
+        setupBottomNavigation();
 
         LinearLayout infoLayout = findViewById(R.id.info_account_layout);
         if (infoLayout != null) {
@@ -37,5 +40,29 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    ////Dat: Method xử lý BottomNavigationView (có thể tái sử dụng)
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
+        bottomNavigation.setSelectedItemId(R.id.navigation_profile);
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_home) {
+                startActivity(new Intent(this, UserHomeActivity.class));
+                return true;
+            } else if (itemId == R.id.navigation_explore) {
+                startActivity(new Intent(this, ExploreActivity.class));
+                return true;
+            } else if (itemId == R.id.navigation_quiz) {
+                ////Dat: Chuyển sang QuizSelectActivity
+                Intent intent = new Intent(this, QuizSelectActivity.class);
+                startActivity(intent);
+                return true;
+            } else if (itemId == R.id.navigation_profile) {
+                return true;
+            }
+            return false;
+        });
     }
 }
