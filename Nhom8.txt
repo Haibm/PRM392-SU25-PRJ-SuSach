@@ -1,0 +1,3 @@
+Tên đề tài: App tìm hiểu ôn tập lịch sử việt nam - Sử Sách
+Tên đề tài: Link github: https://github.com/Haibm/PRM392-SU25-PRJ-SuSach
+Link git clone: https://github.com/Haibm/PRM392-SU25-PRJ-SuSach.git
